@@ -1,0 +1,131 @@
+---
+title: "Problem Set 1"
+author: "Ananth Josyula"
+institute: "Vanderbilt University"
+date: "Due Date: 2022/09/11 @ 6PM CST"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Getting Set Up
+
+If you haven't already, create a folder for this course, and then a subfolder within for the third week `Topic3_HelloWorld`, and two additional subfolders within `code` and `data`.
+
+Open `RStudio` and create a new RMarkDown file (`.Rmd`) by going to `File -> New File -> R Markdown...`.
+Accept defaults and save this file as `[LAST NAME]_ps1.Rmd` to your `code` folder.
+
+Copy and paste the contents of this `Topic3_HelloWorld_PS1.Rmd` file into your `[LAST NAME]_ps1.Rmd` file. Then change the `author: [Your Name]` to your name.
+
+If you haven't already, download the `sc_debt.Rds` file from the course [github page](https://github.com/jbisbee1/DSCI1000/blob/main/Lectures/Topic3_HelloWorld/data/sc_debt.Rds) and save it to your `data` folder.
+
+All of the following questions should be answered using 
+````{verbatim}
+```{r}
+# EXAMPLE CODE
+mean(c(1,2,3))
+```
+````
+
+Some questions will also ask for answers written out in English, instead of just `R` code. These will be indicated with the code
+
+````{verbatim}
+> - Write answer here
+````
+
+
+This problem set is worth 20 total points, plus one extra credit point. The point values for each question are indicated in brackets below. You are free to rely on whatever resources you need to complete this problem set, including lecture notes, lecture presentations, Google, your classmates...you name it. However, the final submission must be complete by you. There are no group assignments. To submit, compiled the completed problem set and upload the `.html` file to Brightspace by 6PM CST on 2022/09/11.
+
+**Good luck!**
+
+
+## Question 1 [1 point]
+*Require `tidyverse` and load the `sc_debt.Rds` data by assigning it to an object named `df`.*
+
+```{r}
+# INSERT CODE HERE
+require(tidyverse)
+df<-readRDS("../data/sc_debt.Rds")
+```
+
+
+## Question 2 [2 points]
+*Which school has the lowest admission rate?*
+```{r}
+# INSERT CODE HERE
+df %>%
+  arrange(adm_rate) %>%
+  select(instnm,adm_rate)
+```
+
+> - Saint Elizabeth College of Nursing has the lowest admission rate. It is tied with Yeshivat Hechal Shemuel for an admission rate of 0
+
+## Question 3 [2 points]
+*Which are the top 10 schools by average SAT score?*
+```{r}
+# INSERT CODE HERE
+df %>%
+  arrange(-sat_avg) %>%
+  select(instnm,sat_avg)
+```
+
+> - The top 10 schools by average SAT score are: California Institute of Technology, Massachusetts Institute of Technology, University of Chicago, Harvey Mudd College, Duke University, Franklin W Olin College of Engineering, Washington University in St Louis, Rice University, Yale University, Harvard University
+
+
+## Question 4 [2 points]
+*Which state is home to the school with the largest median earnings of recent graduates, and how much did they make?*
+```{r}
+# INSERT CODE HERE
+df %>%
+  arrange(-md_earn_wne_p6) %>%
+  select(instnm,stabbr,md_earn_wne_p6)
+```
+
+> - MO is the state with the largest median earnings of recent graduates. Those graduating from University of Health Sciences and Pharmacy in St. Louis made 120400
+
+## Question 5 [2 points]
+*What is the average SAT score of the school with the highest median earnings identified in question 3?*
+```{r}
+# INSERT CODE HERE
+df %>%
+  filter(instnm == "University of Health Sciences and Pharmacy in St. Louis") %>%
+  select(instnm,stabbr,sat_avg)
+```
+
+> - The average SAT score of University of Health Sciences and Pharmacy in St. Louis is 1262
+
+## Question 6 [2 points]
+*Calculate the average SAT score and median earnings of recent graduates by state.*
+```{r}
+# INSERT CODE HERE
+df %>%
+  group_by(stabbr) %>%
+  summarise(mean_sat = mean(sat_avg,na.rm=T),mean_earning = mean(md_earn_wne_p6, na.rm=T))
+```
+
+## Question 7 [2 points]
+*Plot the average SAT score (x-axis) against the median earnings of recent graduates (y-axis) by school.*
+```{r}
+# INSERT CODE HERE
+df %>%
+  ggplot(aes(x = sat_avg,y = md_earn_wne_p6)) +
+  geom_point()
+```
+
+## Question 8 [4 points]
+*Plot the average SAT score (x-axis) against the median earnings of recent graduates (y-axis) by **STATE**. (Extra credit: plot the line of best fit.)*
+```{r}
+# INSERT CODE HERE
+df %>%
+  group_by(stabbr) %>%
+  summarise(mean_sat = mean(sat_avg,na.rm=T), mean_earning = mean(md_earn_wne_p6, na.rm=T)) %>%
+  ggplot(aes(x = mean_sat,y = mean_earning)) +
+  geom_point() +
+  geom_smooth(method = 'lm',se = F)
+```
+
+## Question 9 [4 points]
+*What relationship do you observe? Why do you think this relationship exists?*
+
+> - I observe a positive correlation between the average SAT score and the median earnings of recent graduates by state. This means that as states' average SAT scores increase, the median earnings of that state's recent graduates also rises. This could be because students who score higher on the SAT are more likely to attend prestigious institutions that provide better exposure to recruiters who pay higher salaries to recent graduates.
+
